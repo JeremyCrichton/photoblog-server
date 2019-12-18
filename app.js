@@ -1,11 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const port = 5000;
+const mongoose = require('mongoose');
 
 const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes');
 const HttpError = require('./models/http-error');
+
+const PORT = 5000;
+const MONGO_USER = 'jeremy';
+const MONGO_PW = 'PNi9cUoxXRZ2AQcN';
 
 // Parse any incoming request body & extract any incoming JSON data to JS and then call next
 app.use(bodyParser.json());
@@ -34,6 +38,17 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || 'An unknown error occurred!' }); // A generic msg if there is no message
 });
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port} 😄`);
-});
+mongoose
+  .connect(
+    `mongodb+srv://${MONGO_USER}:${MONGO_PW}@cluster0-l4yzk.mongodb.net/places?retryWrites=true&w=majority`,
+    { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
+  )
+  // If connection to db is successful, start node server
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT} 😄`);
+    });
+  })
+  .catch(error => {
+    console.log(error);
+  });
