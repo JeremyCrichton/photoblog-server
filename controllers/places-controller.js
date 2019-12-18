@@ -57,6 +57,7 @@ const getPlacesByUserId = (req, res, next) => {
   const places = DUMMY_PLACES.filter(p => p.creator === userId);
 
   if (!places || places.length === 0) {
+    // When using next (vs. throw), need to return here to stop fn execution
     return next(
       new HttpError("Couldn't find any places for the provided user id.", 404)
     );
@@ -69,7 +70,9 @@ const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log(errors);
-    next(new HttpError('Invalid inputs passed, please check your data.', 422));
+    return next(
+      new HttpError('Invalid inputs passed, please check your data.', 422)
+    );
   }
 
   const { title, description, address, creator } = req.body;
