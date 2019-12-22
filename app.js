@@ -14,6 +14,16 @@ const MONGO_PW = 'PNi9cUoxXRZ2AQcN';
 // Parse any incoming request body & extract any incoming JSON data to JS and then call next
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
+  next();
+});
+
 // Only forward requests to route if starts w/ 1st param
 app.use('/api/places', placesRoutes);
 app.use('/api/users', usersRoutes);
@@ -40,7 +50,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    `mongodb+srv://${MONGO_USER}:${MONGO_PW}@cluster0-l4yzk.mongodb.net/places?retryWrites=true&w=majority`,
+    `mongodb+srv://${MONGO_USER}:${MONGO_PW}@cluster0-l4yzk.mongodb.net/mern?retryWrites=true&w=majority`,
     { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
   )
   // If connection to db is successful, start node server
