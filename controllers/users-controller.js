@@ -41,8 +41,7 @@ const signup = async (req, res, next) => {
   const newUser = new User({
     name,
     email,
-    image:
-      'https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?cs=srgb&dl=animal-pet-cute-kitten-45201.jpg&fm=jpg',
+    image: req.file.path,
     password,
     places: []
   });
@@ -74,12 +73,10 @@ const login = async (req, res, next) => {
     );
   }
 
-  res
-    .status(200)
-    .json({
-      message: 'Logged in',
-      user: existingUser.toObject({ getters: true })
-    });
+  res.status(200).json({
+    message: 'Logged in',
+    user: existingUser.toObject({ getters: true })
+  });
 };
 
 exports.getUsers = getUsers;

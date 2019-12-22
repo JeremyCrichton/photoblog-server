@@ -1,6 +1,8 @@
+const fs = require('fs');
+const path = require('path');
+
 const express = require('express');
 const bodyParser = require('body-parser');
-const app = express();
 const mongoose = require('mongoose');
 
 const placesRoutes = require('./routes/places-routes');
@@ -11,8 +13,13 @@ const PORT = 5000;
 const MONGO_USER = 'jeremy';
 const MONGO_PW = 'PNi9cUoxXRZ2AQcN';
 
+const app = express();
+
 // Parse any incoming request body & extract any incoming JSON data to JS and then call next
 app.use(bodyParser.json());
+
+// Staticly serve requested file
+app.use('/uploads/images', express.static(path.join('uploads', 'images')));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -38,6 +45,13 @@ app.use((req, res, next) => {
 // If 4 params are provided, express treats this as an error handling middleware
 // Runs if any middleware in front of it yields an errors
 app.use((error, req, res, next) => {
+  // If an error occurs and there was an image w/ the req, delete file that was uploaded
+  if (req.file) {
+    fs.unlink(req.file.path, err => {
+      console.log(err);
+    });
+  }
+
   // A response has already been sent
   if (res.headerSent) {
     // return next and forward the error

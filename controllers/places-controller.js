@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 
@@ -89,8 +91,7 @@ const createPlace = async (req, res, next) => {
     description,
     address,
     location: coordinates,
-    image:
-      'https://img.jakpost.net/c/2018/11/28/2018_11_28_59559_1543399591._large.jpg',
+    image: req.file.path,
     creator
   });
 
@@ -174,6 +175,8 @@ const deletePlace = async (req, res, next) => {
     next(new HttpError('Could not find place associated with this ID.'));
   }
 
+  const imagePath = place.image;
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -186,6 +189,11 @@ const deletePlace = async (req, res, next) => {
       new HttpError('Something went wrong (2), could not delete place.', 500)
     );
   }
+
+  // delete the image
+  fs.unlink(imagePath, err => {
+    console.log(err);
+  });
 
   res.status(200).json({ message: `Deleted place id ${placeId}` });
 };

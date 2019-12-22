@@ -1,8 +1,10 @@
 const express = require('express');
 const { check } = require('express-validator');
-const router = express.Router();
 
 const placesControllers = require('../controllers/places-controller');
+const fileUpload = require('../middleware/file-upload');
+
+const router = express.Router();
 
 router.get('/:pid', placesControllers.getPlaceById);
 
@@ -12,6 +14,7 @@ router.get('/user/:uid', placesControllers.getPlacesByUserId);
 // Middlewares (parameters) are evaluated left to right
 router.post(
   '/',
+  fileUpload.single('image'), // look for image in body w/ key 'image'
   [
     check('title')
       .not()
