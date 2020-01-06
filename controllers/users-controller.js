@@ -64,9 +64,9 @@ const signup = async (req, res, next) => {
   let token;
   try {
     token = jwt.sign(
-      { userId: newUser.id, email: newUser.email },
-      'supersecret_dont_share',
-      { expiresIn: '1h' }
+      { userId: newUser.id, email: newUser.email }, // what to return
+      'supersecret_dont_share', // private key (string that only server knows)
+      { expiresIn: '1h' } // config options
     );
   } catch (error) {
     return next(new HttpError('Signup failed.', 500));
@@ -110,9 +110,21 @@ const login = async (req, res, next) => {
     );
   }
 
+  let token;
+  try {
+    token = jwt.sign(
+      { userId: existingUser.id, email: existingUser.email },
+      'supersecret_dont_share',
+      { expiresIn: '1h' }
+    );
+  } catch (error) {
+    return next(new HttpError('Login failed.', 500));
+  }
+
   res.status(200).json({
-    message: 'Logged in',
-    user: existingUser.toObject({ getters: true })
+    userId: existingUser.id,
+    email: existingUser.email,
+    token
   });
 };
 
