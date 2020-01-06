@@ -6,6 +6,11 @@ const jwt = require('jsonwebtoken');
 const HttpError = require('../models/http-error');
 
 module.exports = (req, res, next) => {
+  // First, just allow browser optioins request to continue
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+
   // extract token from incoming request header
   // headers property is provided by request & contains kv pairs
 
@@ -28,6 +33,6 @@ module.exports = (req, res, next) => {
     next();
   } catch (err) {
     // return to ensure no code after this executes
-    return next(new HttpError('Authentication failed!', 401));
+    return next(new HttpError('Authentication failed!', 403));
   }
 };

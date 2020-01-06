@@ -145,6 +145,12 @@ const updatePlace = async (req, res, next) => {
     );
   }
 
+  // Send an error if current user did not create this place
+  // place.creator is a mongoose object, so need to change to string
+  if (place.creator.toString() !== req.userData.userId) {
+    return next(new HttpError('You are not allowed to edit this place.', 401));
+  }
+
   place.title = title;
   place.description = description;
 
@@ -164,6 +170,7 @@ const deletePlace = async (req, res, next) => {
   let place;
 
   try {
+    // use populate to get the full user object
     place = await Place.findById(placeId).populate('creator');
   } catch (error) {
     return next(
@@ -173,6 +180,12 @@ const deletePlace = async (req, res, next) => {
 
   if (!place) {
     next(new HttpError('Could not find place associated with this ID.'));
+  }
+
+  if (place.creator.id !== req.userData.userId) {
+    return next(
+      new HttpError('You are not allowed to delete this place.', 401)
+    );
   }
 
   const imagePath = place.image;
