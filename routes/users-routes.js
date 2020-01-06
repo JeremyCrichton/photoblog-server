@@ -9,7 +9,8 @@ router.get('/', usersController.getUsers);
 
 router.post(
   '/signup',
-  // single method gives us access to single middleware, used to retrieve a single file
+  // Use multer middleware which is wrapped, configured, and exported as our own fileUpload middlware
+  // single method gives us access to single middleware on the exported object frommulter, which is used to retrieve a single file
   // 'image' is the name of key of the incoming request
   fileUpload.single('image'),
   [

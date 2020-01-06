@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const HttpError = require('../models/http-error');
 const User = require('../models/user');
@@ -60,7 +61,18 @@ const signup = async (req, res, next) => {
     return next(new HttpError('Signup failed.', 500));
   }
 
-  res.status(201).json({ user: newUser.toObject({ getters: true }) });
+  let token;
+  try {
+    token = jwt.sign(
+      { userId: newUser.id, email: newUser.email },
+      'supersecret_dont_share',
+      { expiresIn: '1h' }
+    );
+  } catch (error) {
+    return next(new HttpError('Signup failed.', 500));
+  }
+
+  res.status(201).json({ userId: newUser.id, email: newUser.email, token });
 };
 
 const login = async (req, res, next) => {
@@ -84,7 +96,7 @@ const login = async (req, res, next) => {
   try {
     isValidPassword = await bcrypt.compare(password, existingUser.password);
   } catch (err) {
-    // Server-side error, somethiung went wrong during comparison - doesn't mean invalid credentials
+    // Server-side error, something went wrong during comparison - doesn't mean invalid credentials
     return next(
       new HttpError(
         'Could not log you in, please check your credentials and try again.'

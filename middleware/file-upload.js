@@ -1,3 +1,9 @@
+/**
+ * Handle multi-part form data (which can contain text & bin data - JSON only works w/ text)
+ * Wrap multer middleware in this middleware to config and export
+ *
+ */
+
 const multer = require('multer');
 const uuid = require('uuid/v1');
 
@@ -8,6 +14,8 @@ const MIME_TYPE_MAP = {
 };
 
 // Multer middleware config
+// - what type of files to accept
+// - where to store files
 const fileUpload = multer({
   limits: 500000,
   storage: multer.diskStorage({
@@ -27,4 +35,5 @@ const fileUpload = multer({
   })
 });
 
+// export pre-configured middleware
 module.exports = fileUpload;

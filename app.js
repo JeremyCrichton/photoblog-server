@@ -18,7 +18,7 @@ const app = express();
 // Parse any incoming request body & extract any incoming JSON data to JS and then call next
 app.use(bodyParser.json());
 
-// Staticly serve requested file
+// Staticly serve (return) requested file
 app.use('/uploads/images', express.static(path.join('uploads', 'images')));
 
 app.use((req, res, next) => {
@@ -45,8 +45,10 @@ app.use((req, res, next) => {
 // If 4 params are provided, express treats this as an error handling middleware
 // Runs if any middleware in front of it yields an errors
 app.use((error, req, res, next) => {
-  // If an error occurs and there was an image w/ the req, delete file that was uploaded
+  // If an error occurs and there was an image w/ the req delete file that was uploaded
+  // file property is added by multer
   if (req.file) {
+    // cb is called when deletion is done
     fs.unlink(req.file.path, err => {
       console.log(err);
     });

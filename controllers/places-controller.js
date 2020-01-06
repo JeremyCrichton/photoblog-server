@@ -177,6 +177,7 @@ const deletePlace = async (req, res, next) => {
 
   const imagePath = place.image;
 
+  // Delete from DB
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -190,7 +191,7 @@ const deletePlace = async (req, res, next) => {
     );
   }
 
-  // delete the image
+  // Delete from FS
   fs.unlink(imagePath, err => {
     console.log(err);
   });
