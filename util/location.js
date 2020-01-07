@@ -1,4 +1,4 @@
-const API_KEY = 'AIzaSyA404my6ov-74_MZGK_Iv8M8gw1RtpbHMI';
+const API_KEY = process.env.GOOGLE_API_KEY;
 const axios = require('axios');
 
 const HttpError = require('../models/http-error');

@@ -24,7 +24,7 @@ module.exports = (req, res, next) => {
     }
     // Validate token
     // if this validation fails, it will throw an error and thus make it to the catch block
-    const decodedToken = jwt.verify(token, 'supersecret_dont_share');
+    const decodedToken = jwt.verify(token, process.env.JWT_KEY);
 
     // Add data to the request
     req.userData = { userId: decodedToken.userId };

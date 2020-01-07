@@ -10,8 +10,6 @@ const usersRoutes = require('./routes/users-routes');
 const HttpError = require('./models/http-error');
 
 const PORT = 5000;
-const MONGO_USER = 'jeremy';
-const MONGO_PW = 'PNi9cUoxXRZ2AQcN';
 
 const app = express();
 
@@ -66,7 +64,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    `mongodb+srv://${MONGO_USER}:${MONGO_PW}@cluster0-l4yzk.mongodb.net/mern?retryWrites=true&w=majority`,
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0-l4yzk.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
     { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
   )
   // If connection to db is successful, start node server
