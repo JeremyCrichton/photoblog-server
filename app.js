@@ -69,7 +69,7 @@ mongoose
   )
   // If connection to db is successful, start node server
   .then(() => {
-    app.listen(PORT, () => {
+    app.listen(process.env.PORT || PORT, () => {
       console.log(`Server listening on port ${PORT} 😄`);
     });
   })
