@@ -40,7 +40,6 @@ app.use((req, res, next) => {
 });
 
 // Apply to every incoming request
-// If 4 params are provided, express treats this as an error handling middleware
 // Runs if any middleware in front of it yields an errors
 app.use((error, req, res, next) => {
   // If an error occurs and there was an image w/ the req delete file that was uploaded

@@ -13,7 +13,6 @@ const getPlaceById = async (req, res, next) => {
   let place;
   try {
     place = await Place.findById(placeId);
-    // This error happens if something wrong w/ out get request (missing info etc.)
   } catch (error) {
     const err = new HttpError(
       'Something went wrong, could not find a place.',
@@ -22,10 +21,7 @@ const getPlaceById = async (req, res, next) => {
     return next(err);
   }
 
-  // This error happens if get request goes through but there is no such id in db
   if (!place) {
-    // Forward error to next middleware
-    // Note: must use next not throw if running async code
     return next(
       new HttpError("Couldn't find a place for the provided id.", 404)
     );
@@ -38,11 +34,9 @@ const getPlaceById = async (req, res, next) => {
 
 const getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.uid;
-  // let places;
   let userWithPlaces;
 
   try {
-    // places = await Place.find({ creator: userId });
     userWithPlaces = await User.findById(userId).populate('places');
   } catch (error) {
     return next(
@@ -50,17 +44,13 @@ const getPlacesByUserId = async (req, res, next) => {
     );
   }
 
-  // if (!places || places.length === 0) {
   if (!userWithPlaces || userWithPlaces.length === 0) {
-    // When using next (vs. throw), need to return here to stop fn execution
     return next(
       new HttpError("Couldn't find any places for the provided user id.", 404)
     );
   }
 
-  // mongoose's find method returns an array so must map
   res.json({
-    // places: places.map(place =>
     places: userWithPlaces.places.map(place =>
       place.toObject({ getters: true })
     )
@@ -108,13 +98,12 @@ const createPlace = async (req, res, next) => {
     return next(new HttpError('Could not find user for provided id', 404));
   }
 
-  //  Store a new document in db collection & create a unique id
   // Use a session so if any actions aren't successful they are all rolled back
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await createdPlace.save({ session: sess });
-    user.places.push(createdPlace); // this is a mongoose push method, adds created place id to places field of user
+    user.places.push(createdPlace);
     await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (error) {
@@ -146,7 +135,6 @@ const updatePlace = async (req, res, next) => {
   }
 
   // Send an error if current user did not create this place
-  // place.creator is a mongoose object, so need to change to string
   if (place.creator.toString() !== req.userData.userId) {
     return next(new HttpError('You are not allowed to edit this place.', 401));
   }

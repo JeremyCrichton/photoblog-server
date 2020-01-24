@@ -24,7 +24,6 @@ router.get('/user/:uid', placesControllers.getPlacesByUserId);
 router.use(checkAuth);
 
 // Any post request to /api/places
-// Middlewares (parameters) are evaluated left to right
 router.post(
   '/',
   fileUpload.single('image'), // look for image in body w/ key 'image'
